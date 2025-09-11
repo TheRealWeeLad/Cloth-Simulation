@@ -86,6 +86,9 @@ void Shader::setPaths(const char* vertexPath, const char* fragmentPath, const ch
 // Reads shader files into string array [vertexCode, fragmentCode]
 std::string Shader::readShaderFile(const char* path) const
 {
+	std::string realPath{ path };
+	realPath = "Shaders/" + realPath;
+	path = realPath.c_str();
 	std::string code;
 	std::ifstream shaderFile;
 	// Ensure ifstream objects can throw exceptions

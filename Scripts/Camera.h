@@ -1,5 +1,4 @@
-#ifndef CameraClass
-#define CameraClass
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -25,6 +24,7 @@ public:
 	Camera(glm::vec3 position, glm::vec3 eulerAngles, float fov = 45.0f, ViewMode mode = ViewMode::FREE, glm::vec3 target = {});
 	Camera();
 
+	ViewMode getMode();
 	void setPosition(glm::vec3 position);
 	void translate(glm::vec3 translation);
 	void rotate(glm::vec3 eulerAngles);
@@ -39,4 +39,3 @@ private:
 
 	void calculateDirections();
 };
-#endif

@@ -19,6 +19,10 @@ Camera::Camera(glm::vec3 position, glm::vec3 eulerAngles, float fov, ViewMode mo
 	: Camera(position, glm::quat(eulerAngles), fov, mode, target) {}
 Camera::Camera() : Camera(glm::vec3(0, 0, 3)) {}
 
+Camera::ViewMode Camera::getMode()
+{
+	return mode;
+}
 void Camera::setPosition(glm::vec3 position)
 {
 	this->position = position;
@@ -54,23 +58,23 @@ void Camera::stopTargeting()
 
 void Camera::calculateDirections()
 {
-	forward = glm::vec3(0, 0, -1) * rotation;
 	up = glm::vec3(0, 1, 0) * rotation;
-	right = glm::vec3(1, 0, 0) * rotation;
+	switch (mode)
+	{
+	case TARGET:
+		forward = glm::normalize(target - position);
+		right = glm::cross(forward, up);
+		break;
+	case FREE:
+		forward = glm::vec3(0, 0, -1) * rotation;
+		right = glm::vec3(1, 0, 0) * rotation;
+		break;
+	}
 }
 
 void Camera::calculateViewMatrix()
 {
-	glm::vec3 targetDir;
-	switch (mode)
-	{
-	case TARGET:
-		targetDir = target;
-		break;
-	case FREE:
-		targetDir = position + forward;
-		break;
-	}
+	if (mode == TARGET) calculateDirections();
 
-	view = glm::lookAt(position, targetDir, up);
+	view = glm::lookAt(position, position + forward, up);
 }

@@ -1,5 +1,7 @@
 #include "Cloth.h"
 
+std::vector<Cloth*> Cloth::ClothObjects = {};
+
 /* HELPER */
 bool Cloth::adjacent(int idx1, int idx2) const
 {
@@ -21,6 +23,7 @@ Cloth::Cloth(glm::vec3 position, float scale, unsigned int resolution, Simulatio
 	shearRestLen(scale* sqrt(2) / (resolution - 1)), anchors{17, 19, 10, 12},
 	collider{ (int)numParticles, clothThickness }, meshRenderer()
 {
+	ClothObjects.push_back(this);
 	// Create a square mesh in the xz-plane
 	std::vector<float> vertexMovement(numParticles * 3);
 	std::vector<float> texCoords{};
@@ -58,6 +61,12 @@ void Cloth::setRenderer(MeshRenderer* renderer)
 {
 	meshRenderer = renderer;
 	meshRenderer->position = position;
+}
+
+void Cloth::MeshUpdateAll()
+{
+	for (int i = 0; i < ClothObjects.size(); i++)
+		ClothObjects[i]->meshUpdate();
 }
 
 void Cloth::meshUpdate()

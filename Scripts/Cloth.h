@@ -47,6 +47,7 @@ private:
 	void UpdateNormals(int idx);
 	void HandleCollisions(int idx);
 public:
+	static std::vector<Cloth*> ClothObjects;
 	std::vector<Vertex> vertices; // 2D array of vertices (flattened)
 	Mesh mesh;
 	MeshRenderer* meshRenderer;
@@ -61,4 +62,5 @@ public:
 	void setRenderer(MeshRenderer* renderer);
 	void meshUpdate();
 	void fixedUpdate();
+	static void MeshUpdateAll();
 };
