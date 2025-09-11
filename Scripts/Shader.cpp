@@ -1,7 +1,5 @@
 #include "Shader.h"
 
-using namespace Engine;
-
 const Material Material::Default{ {1, 1, 1}, {1, 1, 1}, 1.0F, false };
 
 Shader::Shader() { ID = -1; }

@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -8,8 +7,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-namespace Engine {
 
 struct Material
 {
@@ -95,5 +92,3 @@ public:
 	void setMat4(const std::string& name, glm::mat4 value) const;
 	void setMaterial(Material mat) const;
 };
-}
-#endif

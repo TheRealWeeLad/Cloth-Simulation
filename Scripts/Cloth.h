@@ -5,8 +5,6 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-namespace Engine {
-
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 lastPosition;
@@ -26,7 +24,7 @@ enum SimulationMethod {
 	SpringMass, PBD
 };
 
-class Cloth : public GameObject
+class Cloth
 {
 private:
 	static const unsigned long DEFAULT_RESOLUTION{ 10 };
@@ -51,14 +49,16 @@ private:
 public:
 	std::vector<Vertex> vertices; // 2D array of vertices (flattened)
 	Mesh mesh;
+	MeshRenderer* meshRenderer;
 	ClothCollider collider;
+	glm::vec3 position;
 
 	Cloth();
 	Cloth(unsigned int resolution, SimulationMethod method = SpringMass);
 	Cloth(glm::vec3 position, SimulationMethod method = SpringMass);
 	Cloth(glm::vec3 position, float scale, unsigned int resolution = DEFAULT_RESOLUTION, SimulationMethod = SpringMass);
 	
-	virtual void update(float deltaTime);
-	virtual void fixedUpdate();
+	void setRenderer(MeshRenderer* renderer);
+	void meshUpdate();
+	void fixedUpdate();
 };
-}

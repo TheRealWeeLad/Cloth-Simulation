@@ -5,7 +5,6 @@
 #include "../stb_image.h"
 #include "vector"
 #include "Shader.h"
-#include "Component.h"
 #include "Camera.h"
 
 struct Mesh
@@ -69,14 +68,12 @@ struct Texture
 	}
 };
 
-namespace Engine {
-
-class MeshRenderer : public Component
+class MeshRenderer
 {
 public:
-	static std::vector<MeshRenderer*> Renderers;
 	const static unsigned short ID{ 1 };
 	Mesh mesh; // NEVER SET DIRECTLY
+	glm::vec3 position;
 	
 	MeshRenderer();
 	MeshRenderer(Mesh m);
@@ -84,7 +81,7 @@ public:
 	MeshRenderer(Mesh m, Shader s, Material mat);
 	MeshRenderer(Mesh m, Shader s, Material mat, std::vector<Texture> textures);
 
-	void update() override;
+	void update();
 	void render();
 	void setMesh(Mesh m);
 	void updateMesh(Mesh m);
@@ -96,7 +93,10 @@ public:
 	unsigned int getVAO() const;
 	unsigned int getVBO() const;
 	unsigned int getEBO() const;
+
+	static void UpdateAll();
 private:
+	static std::vector<MeshRenderer*> renderers;
 	// For initialization purposes
 	bool shaderTexturesAssigned{ false };
 
@@ -115,4 +115,3 @@ private:
 	// Update shader lighting
 	void updateLighting(int shaderIdx);
 };
-}

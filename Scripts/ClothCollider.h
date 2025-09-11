@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
 
-namespace Engine
-{
 enum ClothCollisionMethod { ParticleHash, BoundingBox };
 
 class ClothCollider
@@ -22,4 +20,3 @@ public:
 	void GenerateParticleHash(std::vector<float> vertices);
 	std::vector<int> DetectCollisions(std::vector<float> vertices, int idx);
 };
-}

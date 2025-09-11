@@ -1,8 +1,5 @@
 #include "MeshRenderer.h"
 #include "LightObject.h"
-#include "Transform.h"
-
-using namespace Engine;
 
 /* STATIC */
 // Initialize Static Mesh Vertices
@@ -95,17 +92,17 @@ const Mesh Mesh::CUBE{
 };
 const Mesh Mesh::NULL_MESH{};
 
-std::vector<MeshRenderer*> MeshRenderer::Renderers{};
+std::vector<MeshRenderer*> MeshRenderer::renderers{};
 
 /* PUBLIC */
-MeshRenderer::MeshRenderer()
+MeshRenderer::MeshRenderer() : position{}
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 	mesh = Mesh::NULL_MESH;
 	addShader(); // use default shader
-	Renderers.push_back(this);
+	renderers.push_back(this);
 }
 MeshRenderer::MeshRenderer(Mesh m) : MeshRenderer()
 {
@@ -170,6 +167,14 @@ void MeshRenderer::update()
 		transformShader(i);
 	}
 	render();
+}
+
+void MeshRenderer::UpdateAll()
+{
+	for (int i = 0; i < renderers.size(); i++)
+	{
+		renderers[i]->update();
+	}
 }
 
 void MeshRenderer::render()
@@ -294,7 +299,7 @@ void MeshRenderer::interleave()
 void MeshRenderer::transformShader(int shaderIdx)
 {
 	glm::mat4 model{ glm::mat4(1.0f) };
-	model = glm::translate(model, gameObject->transform.position);
+	model = glm::translate(model, position);
 	//model = glm::rotate(model, time, glm::vec3(1.0f, 1.0f, 0));
 
 	glm::mat4 projection{ glm::perspective(glm::radians(Camera::MainCamera->fov),

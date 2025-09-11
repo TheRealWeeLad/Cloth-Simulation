@@ -1,7 +1,5 @@
 #include "Cloth.h"
 
-using namespace Engine;
-
 /* HELPER */
 bool Cloth::adjacent(int idx1, int idx2) const
 {
@@ -18,10 +16,10 @@ bool Cloth::adjacent(int idx1, int idx2) const
 Cloth::Cloth() : Cloth(DEFAULT_RESOLUTION) {}
 Cloth::Cloth(unsigned int resolution, SimulationMethod method) : Cloth({}, 1, resolution, method) {}
 Cloth::Cloth(glm::vec3 position, SimulationMethod method) : Cloth(position, 1, DEFAULT_RESOLUTION, method) {}
-Cloth::Cloth(glm::vec3 position, float scale, unsigned int resolution, SimulationMethod method) : GameObject(position),
+Cloth::Cloth(glm::vec3 position, float scale, unsigned int resolution, SimulationMethod method) : position(position),
 	resolution(resolution), numParticles(resolution * resolution), restLen(scale / (resolution - 1)), 
 	shearRestLen(scale* sqrt(2) / (resolution - 1)), anchors{17, 19, 10, 12},
-	collider{ (int)numParticles, clothThickness }
+	collider{ (int)numParticles, clothThickness }, meshRenderer()
 {
 	// Create a square mesh in the xz-plane
 	std::vector<float> vertexMovement(numParticles * 3);
@@ -56,11 +54,16 @@ Cloth::Cloth(glm::vec3 position, float scale, unsigned int resolution, Simulatio
 	}
 }
 
-void Cloth::update(float deltaTime)
+void Cloth::setRenderer(MeshRenderer* renderer)
 {
-	GameObject::update(deltaTime);
+	meshRenderer = renderer;
+	meshRenderer->position = position;
+}
 
-	getComponent<MeshRenderer>()->updateMesh(mesh);
+void Cloth::meshUpdate()
+{
+	if (meshRenderer) meshRenderer->updateMesh(mesh);
+	else std::cout << "ERROR :: MESH RENDERER NOT ATTACHED TO CLOTH AT (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
 }
 
 void Cloth::fixedUpdate()

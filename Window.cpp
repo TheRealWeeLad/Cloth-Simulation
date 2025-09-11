@@ -8,6 +8,7 @@
 #include "Scripts/Camera.h"
 #include "Scripts/MeshRenderer.h"
 #include "Scripts/Cloth.h"
+#include "Scripts/LightObject.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -93,7 +94,7 @@ void physicsLoop()
 	while (!glfwWindowShouldClose(window))
 	{
 		time = glfwGetTime();
-		GameObject::FixedUpdateAll();
+		Physics::FixedUpdateAll();
 
 		float elapsedTime = glfwGetTime() - time;
 		float waitMS{ 1000 * (Physics::FIXEDDELTATIME - elapsedTime) };
@@ -137,9 +138,10 @@ int main()
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 
-	// TODO: lighting
+	// Lighting
+	LightObject light{ {}, {-1, -1, 0} };
 
-	// TODO: make cloth its own object
+	// Cloth stuff
 	Cloth cloth{ {}, 2, 20 };
 	Shader visualizeShader{ "ClothVisualShaderVert.glsl", "ClothVisualShaderFrag.glsl", "ClothVisualShaderGeom.glsl" };
 	//Shader clothShader{ "ClothShaderVert.glsl", "ClothShaderFrag.glsl" };
@@ -149,12 +151,16 @@ int main()
 	Material clothMat{ {0.2, 0.2, 0.8}, {0, 0, 9}, 1.0F, true };
 	MeshRenderer clothRend{ cloth.mesh, texShader, clothMat, { clothTex } };
 	clothRend.addShader(visualizeShader);
-	cloth.addComponent(&clothRend);
+	cloth.setRenderer(&clothRend);
 
 	
 	// Dispatch Physics thread for fixed updates
 	std::thread physicsThread(physicsLoop);
 	physicsThread.detach();
+
+
+	// Make camera target cloth
+	cam->beginTargeting(cloth.position);
 
 
 	// Render Loop
@@ -175,7 +181,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Rendering Commands
-		// TODO: render
+		MeshRenderer::UpdateAll();
 
 		// Check/Call Events and Swap Buffers
 		glfwSwapBuffers(window);

@@ -1,8 +1,6 @@
 #include "ClothCollider.h"
 #include "Debug.cpp"
 
-using namespace Engine;
-
 /* PRIVATE */
 // Thanks to Matthias Müller
 int ClothCollider::hash(int x, int y, int z) const
