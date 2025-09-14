@@ -39,16 +39,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // INPUT
 void processInput(GLFWwindow* window)
 {
-	// TODO: change camera behavior (rotate on mouse drag)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
 	// Camera Movement
+	// TODO: Fix sphere movement
 	const float camSpeed = 20 * deltaTime;
+	glm::vec3 upDir{ cam->getMode() == Camera::TARGET ? cam->up : cam->forward };
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cam->translate(camSpeed * cam->forward);
+		cam->translate(camSpeed * upDir);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cam->translate(camSpeed * -cam->forward);
+		cam->translate(camSpeed * -upDir);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		cam->translate(camSpeed * -cam->right);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
@@ -98,7 +99,7 @@ void physicsLoop()
 
 		float elapsedTime = glfwGetTime() - time;
 		float waitMS{ 1000 * (Physics::FIXEDDELTATIME - elapsedTime) };
-		std::cout << elapsedTime * 1000 << std::endl;
+		//std::cout << elapsedTime * 1000 << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds((int)(waitMS)));
 	}
 }
@@ -112,7 +113,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create Window
-	window = glfwCreateWindow(800, 600, "GooGoo", NULL, NULL);
+	window = glfwCreateWindow(800, 600, "Cloth Simulation", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create window" << std::endl;
@@ -147,7 +148,7 @@ int main()
 	//Shader clothShader{ "ClothShaderVert.glsl", "ClothShaderFrag.glsl" };
 	//Shader normalShader{ "DefaultShaderVert.glsl", "NormalShaderFrag.glsl", "NormalShaderGeom.glsl"};
 	Shader texShader{ "TextureShaderVert.glsl", "TextureShaderFrag.glsl" };
-	Texture clothTex{ "ClothTexture.jpg", GL_REPEAT, GL_REPEAT, {}, GL_NEAREST, GL_LINEAR, GL_RGB };
+	Texture clothTex{ "Resources/ClothTexture.jpg", GL_REPEAT, GL_REPEAT, {}, GL_NEAREST, GL_LINEAR, GL_RGB };
 	Material clothMat{ {0.2, 0.2, 0.8}, {0, 0, 9}, 1.0F, true };
 	MeshRenderer clothRend{ cloth.mesh, texShader, clothMat, { clothTex } };
 	clothRend.addShader(visualizeShader);
@@ -181,6 +182,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Rendering Commands
+		Cloth::MeshUpdateAll();
 		MeshRenderer::UpdateAll();
 
 		// Check/Call Events and Swap Buffers

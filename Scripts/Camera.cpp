@@ -2,6 +2,9 @@
 
 Camera cam{};
 Camera* Camera::MainCamera{ &cam };
+const glm::vec3 Camera::forward{0, 0, -1};
+const glm::vec3 Camera::up{0, 1, 0};
+const glm::vec3 Camera::right{1, 0, 0};
 
 /* CONSTRUCTORS */
 Camera::Camera(glm::vec3 position, glm::quat rotation, float fov, ViewMode mode, glm::vec3 target)
@@ -12,14 +15,13 @@ Camera::Camera(glm::vec3 position, glm::quat rotation, float fov, ViewMode mode,
 	this->mode = mode;
 	this->target = target;
 
-	calculateDirections();
 	calculateViewMatrix();
 }
 Camera::Camera(glm::vec3 position, glm::vec3 eulerAngles, float fov, ViewMode mode, glm::vec3 target)
 	: Camera(position, glm::quat(eulerAngles), fov, mode, target) {}
 Camera::Camera() : Camera(glm::vec3(0, 0, 3)) {}
 
-Camera::ViewMode Camera::getMode()
+Camera::ViewMode Camera::getMode() const
 {
 	return mode;
 }
@@ -30,13 +32,13 @@ void Camera::setPosition(glm::vec3 position)
 }
 void Camera::translate(glm::vec3 translation)
 {
-	position += translation;
+	position += rotation * translation;
 	calculateViewMatrix();
 }
 void Camera::rotate(glm::quat quaternion)
 {
+	if (mode == TARGET) return;
 	rotation = quaternion * rotation;
-	calculateDirections();
 	calculateViewMatrix();
 }
 void Camera::rotate(glm::vec3 eulerAngles)
@@ -56,25 +58,8 @@ void Camera::stopTargeting()
 	calculateViewMatrix();
 }
 
-void Camera::calculateDirections()
-{
-	up = glm::vec3(0, 1, 0) * rotation;
-	switch (mode)
-	{
-	case TARGET:
-		forward = glm::normalize(target - position);
-		right = glm::cross(forward, up);
-		break;
-	case FREE:
-		forward = glm::vec3(0, 0, -1) * rotation;
-		right = glm::vec3(1, 0, 0) * rotation;
-		break;
-	}
-}
-
 void Camera::calculateViewMatrix()
 {
-	if (mode == TARGET) calculateDirections();
-
-	view = glm::lookAt(position, position + forward, up);
+	if (mode == TARGET) rotation = glm::quatLookAt(glm::normalize(target - position), rotation * up);
+	view = glm::lookAt(position, position + rotation * forward, rotation * up);
 }

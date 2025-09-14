@@ -13,9 +13,9 @@ public:
 	enum ViewMode { TARGET, FREE };
 	glm::vec3 position;
 	glm::vec3 target;
-	glm::vec3 forward;
-	glm::vec3 up;
-	glm::vec3 right;
+	static const glm::vec3 forward;
+	static const glm::vec3 up;
+	static const glm::vec3 right;
 	glm::mat4 view;
 	glm::quat rotation;
 	float fov;
@@ -24,7 +24,7 @@ public:
 	Camera(glm::vec3 position, glm::vec3 eulerAngles, float fov = 45.0f, ViewMode mode = ViewMode::FREE, glm::vec3 target = {});
 	Camera();
 
-	ViewMode getMode();
+	ViewMode getMode() const;
 	void setPosition(glm::vec3 position);
 	void translate(glm::vec3 translation);
 	void rotate(glm::vec3 eulerAngles);
@@ -36,6 +36,4 @@ public:
 	void calculateViewMatrix();
 private:
 	ViewMode mode;
-
-	void calculateDirections();
 };
